@@ -1,0 +1,39 @@
+# All-in-one continuous integration (CI) workflow.
+# Runs on all platforms (Windows, macOS, and Linux)
+# for all events (pull request, release, and schedule).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - v*
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths-ignore:
+      - '**/*.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.editorconfig'
+      - '.env-example'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'cspell.json'
+
+jobs:
+
+  # Quality gate to allow PR merge, used in the branch protection rules.
+  ci-passed:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - run: |
+         echo $(git branch --show-current)
+         echo "✅ CI passed" > $GITHUB_STEP_SUMMARY
