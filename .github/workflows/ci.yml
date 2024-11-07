@@ -1,0 +1,68 @@
+# All-in-one continuous integration (CI) workflow.
+# Runs on all platforms (Windows, macOS, and Linux)
+# for all events (pull request, release, and schedule).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - v*
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths-ignore:
+      - '**/*.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.editorconfig'
+      - '.env-example'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'cspell.json'
+
+jobs:
+
+  # Quality gate to allow PR merge, used in the branch protection rules.
+  ci-passed:
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: echo "✅ CI passed" > $GITHUB_STEP_SUMMARY
+
+  release:
+    needs: ci-passed
+    if: (github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: touch RELEASE.txt
+
+      - name: Deploy continuous
+        if: (github.ref == 'refs/heads/main') && !(contains(github.ref, '/tags/v'))
+        uses: crowbarmaster/GH-Automatic-Releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "continuous"
+          prerelease: true
+          title: 'Continuous Build'
+          files: RELEASE.txt
+
+      - name: Deploy release
+        if: contains(github.ref, '/tags/v')
+        uses: crowbarmaster/GH-Automatic-Releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: RELEASE.txt
+            
+  winget-publish:
+    needs: release
+    if: contains(github.ref, 'tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: FAKE
+        run: echo "OK"
