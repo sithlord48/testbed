@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Get help
+    url: https://github.com/sithlord48/testbed/discussions/new?category=q-a
+    about: Get help with an issue you are having.
+  - name:  Share an idea
+    url: https://github.com/sithlord48/testbed/discussions/new?category=ideas
+    about: Share an idea
+  - name: Show and Tell
+    url: https://github.com/sithlord48/testbed/discussions/new?category=show-and-tell
+    about: Show off things you have done with deskflow
+  - name: Chat with us
+    url: https://matrix.to/#/#deskflow:matrix.org
+    about: Join us in live chat
